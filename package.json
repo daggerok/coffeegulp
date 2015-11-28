@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "gulp": "gulp --require coffee-script/register",
-    "watch": "gulp && gulp watch",
     "clean": "gulp clean",
-    "build": "gulp clean && gulp"
+    "build": "gulp clean && gulp",
+    "watch": "gulp clean && gulp && gulp watch"
   },
   "devDependencies": {
     "coffee-script": "^1.10.0",
