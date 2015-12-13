@@ -1,24 +1,37 @@
-gulp = require 'gulp'
-coffee = require 'gulp-coffee'
-remove = require 'gulp-rimraf'
-
 srcDir = 'src/'
-coffeeSrc = srcDir + 'coffee/**/*.coffee'
+coffeeSrc = srcDir + '**/*.coffee'
 buildDir = 'dist/'
 jsDir = buildDir + 'js/'
 
+gulp = require 'gulp'
+coffee = require 'gulp-coffee'
+remove = require 'gulp-rimraf'
+plumber = require 'gulp-plumber'
+require 'colors'
+
+log = (error) ->
+  console.log [
+    "BUILD FAILED: #{error.name ? ''}".red.underline
+    '\u0007' # beep
+    "#{error.code ? ''}"
+    "#{error.message ? error}"
+    "in #{error.filename ? ''}"
+    "gulp plugin: #{error.plugin ? ''}"
+  ].join '\n'
+  this.end()
+
 gulp.task 'clean', ->
-  gulp.src buildDir
+  gulp.src(buildDir)
     .pipe remove {force: true}
 
 gulp.task 'coffee', ->
-  gulp.src coffeeSrc, {base: 'src/coffee'}
-    .pipe coffee {bare: true}
-      .on 'error', ->
-        console.log error
-    .pipe gulp.dest jsDir
-
-gulp.task 'watch', ->
-  gulp.watch coffeeSrc, ['coffee']
+  gulp.src(coffeeSrc, {base: srcDir})
+    #.pipe(plumber())
+    .pipe(coffee {bare: true})
+      .on('error', log)
+    .pipe gulp.dest buildDir
 
 gulp.task 'default', ['coffee']
+
+gulp.task 'watch', ['default'], ->
+  gulp.watch coffeeSrc, ['coffee']
